@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.yorha.cblog.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="org.yorha.cblog.Entity.UserEntity" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="github" property="github" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="UserDetailResultMap" type="org.yorha.cblog.Entity.UserEntity" >
+    <id column="u_id" property="id" jdbcType="BIGINT" />
+    <result column="u_name" property="name" jdbcType="VARCHAR" />
+    <result column="u_password" property="password" jdbcType="VARCHAR" />
+    <result column="u_email" property="email" jdbcType="VARCHAR" />
+    <result column="u_github" property="github" jdbcType="VARCHAR" />
+    <collection property="roles" javaType="java.util.List"
+                ofType="org.yorha.cblog.Entity.RoleEntity">
+      <id column="r_id" property="id" jdbcType="BIGINT" />
+      <result column="r_name" property="name" jdbcType="VARCHAR" />
+    </collection>
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, name, password, email, github
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_user
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByName" resultMap="UserDetailResultMap" parameterType="java.lang.String" >
+    select
+      tu.id u_id,
+      tu.name u_name,
+      tu.email u_email,
+      tu.github u_github,
+      tu.password u_password,
+      tr.id r_id,
+      tr.name r_name
+    from t_user tu,t_role tr, t_user_role tur where tr.id=tur.role_id and tu.id =tur.user_id
+                                                    and  tu.name = #{name,jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from t_user
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="org.yorha.cblog.Entity.UserEntity" >
+    insert into t_user (id, name, password, 
+      email, github)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{github,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="org.yorha.cblog.Entity.UserEntity" >
+    insert into t_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="github != null" >
+        github,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="github != null" >
+        #{github,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.yorha.cblog.Entity.UserEntity" >
+    update t_user
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="github != null" >
+        github = #{github,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.yorha.cblog.Entity.UserEntity" >
+    update t_user
+    set name = #{name,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      github = #{github,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
